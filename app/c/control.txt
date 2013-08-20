@@ -1,0 +1,10 @@
+// control psuedocode
+
+
+// getNewKeysForEmail(user@email.com)
+	
+
+
+// send email verification
+
+// 

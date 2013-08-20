@@ -1,0 +1,8 @@
+// init DB
+
+// store <email, ndn name>
+
+	// verify not previously existing
+	
+
+// 
