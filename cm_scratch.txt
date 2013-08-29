@@ -1,0 +1,42 @@
+curl -i -H "Content-Type: application/json" -X POST -d '{"user_email":"alexnano@ucla.edu"}' http://localhost:5000/ndn/auth/v1.0/users
+
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"email":"alexnano@ucla.edu"}' http://localhost:5000/ndn/auth/v1.0/users/
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"user_email":"alexnano@ucla.edu"}' http://localhost:5000/ndn/auth/v1.0/users/
+
+gm
+
+
+curl -i -H "Content-Type: application/json" -X POST -d 'email=alexnano@ucla.edu' http://localhost:5000/ndn/auth/v1.0/users/
+
+
+curl -i -H "Content-Type: application/json" -X POST -d 'user_email=alexnano@ucla.edu' http://localhost:5000/ndn/auth/v1.0/users/
+
+
+curl -i -H "Content-Type: application/json" -X POST -d 'alexnano@ucla.edu' http://localhost:5000/ndn/auth/v1.0/users/
+
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/ndn/auth/v1.0/users/alexnano@ucla.edu
+
+
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/ndn/auth/v1.0/users/alexnano@ucla.edu
+
+curl -i -H "Content-Type: application/json" -X GET http://localhost:5000/ndn/auth/v1.0/users/alexnano@ucla.edu
+
+curl -i -H "Content-Type: application/json" -X GET http://localhost:5000/ndn/auth/v1.1/users/alexnano@ucla.edu
+
+
+@app.route('/ndn/auth/v1.0/users', methods = ['POST'])    
+def create_user():
+    if not request.json or not 'email' in request.json:
+        abort(400)
+    # check DB to see if user is already verified
+    
+    # if not, email & start verification... 
+    
+    # if already verified, still email to get public key
+    
+    # for now, just return proof 
+    #mailUser(request.json['email'])
+    
+    return jsonify( { 'eMail': request.json['email']} ), 201

@@ -40,8 +40,11 @@ To Do:
 -curl -i localhost:5000/ndn/auth/v1.0/keys/new
 
 -store/read from database instead of dict
+
 -email
+
 -UI
+
 -enable user flow
 
 then:
