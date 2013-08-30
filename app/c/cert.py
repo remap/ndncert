@@ -16,12 +16,12 @@ from flask.ext.pymongo import PyMongo
 
 import ConfigParser
 config = ConfigParser.RawConfigParser()
-configFile = os.path.dirname(__file__)+'../m/config.cfg'
+configFile = os.path.dirname(__file__)+'config.cfg'
 config.readfp(open(configFile))
 
 
 
-app = Flask(__name__)
+app = Flask("ndn_cert")
 
 mongo = PyMongo(app)
 # replace dict w/ mongoDB. 
@@ -73,7 +73,7 @@ def get_tasks():
 #    return jsonify( { 'user': user[0] } )
     
 @app.route('/ndn/auth/v1.0/users/<string:user_email>', methods = ['GET'])
-def get_user(user_email):
+def old_get_user(user_email):
    # wtf = str((request.json))
     #return(wtf)
     user = filter(lambda t: t['email'] == user_email, users)
@@ -86,28 +86,25 @@ def get_user(user_email):
 
 @app.route('/ndn/auth/v1.1/users/<string:user_email>', methods = ['GET'])
 def get_user(user_email):
-   # wtf = str((request.json))
-    #return(wtf)
-    #user = filter(lambda t: t['email'] == user_email, users)
-    user =  mongo.db.find_one({"email":user_email})
-    #return(request.json['email'])
-    if len(user) == 0:
+    user =  mongo.db.users.find_one({"email":user_email})
+    if (user == None):
+        #if user does not exist
         user = {
-            'email': u'alexnano@remap.ucla.edu',
+            'email': user_email,
             'ndn-name': u'get from UI',
             'pubkey': '', #cert is base64 encoded binary
             'cert': '',
             'confirmed': False
         }
-        mongo.db.insert(user)
-        abort(404)
-    if(user[0]['confirmed'] == False):
+        #make a new one
+        mongo.db.users.insert(user)
+    #if user exists, but is not confirmed
+    elif(user['confirmed'] == False):
+        #send confirmation email
+        mailUser(user['email'])
+    # otherwise, user is confirmed, so let's just return that fact for now. 
+    return jsonify( { 'confirmed': user['confirmed'],'email': user['email'] } )
 
-        mailUser(user[0]['email'])
-    return jsonify( { 'confirmed': user[0]['confirmed'],'email': user[0]['email'] } )
-
-
-    
 @app.route('/ndn/auth/v1.0/certs/<string:user_email>', methods = ['GET'])
 def get_cert(user_email):
     user = filter(lambda t: t['email'] == user_email, users)
