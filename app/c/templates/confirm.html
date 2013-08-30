@@ -20,8 +20,11 @@ Please enter your public key in the textbox below.
 </div>
 
 <p/>
-<form name="input" action="" method="get"> 
+<form name="input" action="http://localhost:5000/ndn/auth/v1.1/pubkey/" method="get"> 
 	Public Key: <textarea name="pubkey" rows="10" cols="30"></textarea><br/>
+	{% if name %}
+	<input type="hidden" name="ndn_name" id="ndn_name" value="{{ name }}">
+	{% endif %}
 	<input type="submit" value="Submit"></input>
 </form>
 <p/>

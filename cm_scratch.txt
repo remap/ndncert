@@ -43,3 +43,20 @@ def create_user():
     #mailUser(request.json['email'])
     
     return jsonify( { 'eMail': request.json['email']} ), 201
+
+
+
+
+OK ! 
+
+so the UI for this is in-place. 
+
+what happens:
+
+user enters email
+validates email
+enters public key
+
+what's next:
+
+email notification of operator

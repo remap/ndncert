@@ -31,7 +31,6 @@ function createNDNName(input){
             if(suffix[suffix.length-2]!=undefined){
                    tld = suffix[suffix.length-2]+"."
             }
-         
             
             dot3 = suffix[suffix.length-1]
         
@@ -46,7 +45,8 @@ function createNDNName(input){
         
             ndnname = prename + postname + "/" + user;
         
-             $('#ndnname').html( ndnname);
+             $('#ndnname').html(ndnname);
+             $('#ndn_name').val(ndnname);
              $('#nameinfo').show();
            
         }
