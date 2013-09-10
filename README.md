@@ -7,12 +7,14 @@ as of writing, basic REST API in place.
 
 see doc/ for specification
 
-see app/ for model/view/control 
+see app/src for model/view/control in development
+
+see app/deploy/ for 'production' version
 
 Usage:
 =============
 
-on server (borges): 
+on server:
 
 	python cert.py 
 
@@ -33,20 +35,12 @@ appending an email after the user/cert/key prefix, will return the value. IE -
 	curl -i localhost:5000/ndn/auth/v1.0/certs/[email]
 
 	curl -i localhost:5000/ndn/auth/v1.0/keys/[email]
+	
+for more examples, see 'cm_scratch.txt'
+
 
 To Do:
 =============
 
--curl -i localhost:5000/ndn/auth/v1.0/keys/new
-
--store/read from database instead of dict
-
--email
-
--UI
-
--enable user flow
-
-then:
-
--give API to Alex A for op scripting
+* add ndn-name prefix -> operator email routing
+* write certification shell script (to interactively and/or auto-sign new pubkeys)
