@@ -97,7 +97,31 @@ def get_key():
     return " ok ! please wait up to 24 hours for operator approval.\n you will be emailed your signed .cert \n"+str(last)
     
     
-    
+@app.route('/ndn/auth/v1.1/candidates/<string:inst_id>', methods = ['GET'])
+def get_candidates(inst_id):
+    # get all valid users containing 'institution_str'where cert=null
+    #regx = re.compile("^"+institution_str, re.IGNORECASE)
+    #all = mongo.db.users.find({"cert": None,"confirmed":"true", "ndn-name": regx})
+    #all =  all = mongo.db.users.find({})
+    #all_str = ""
+    #for user in all:
+    #    all_str+=str(user)+"<br/>"
+    return "hey! "+inst_id
+#
+
+@app.route('/ndn/auth/v1.1/cert/add/', methods = ['GET'])
+def write_cert():
+     # "denied" | cert_str
+     ndn_name = request.args.get('ndn_name')
+     cert = request.args.get('cert')
+     mongo.db.users.update({ 'ndn_name': ndn_name },{"$set": { 'cert': cert }})
+     return "user updated."
+        
+        
+        
+        
+        
+        
         
 # LEGACY DICT / NONMONGO
 

@@ -14,6 +14,7 @@ import os
 import hashlib
 # data
 from flask.ext.pymongo import PyMongo
+import re
 
 import ConfigParser
 config = ConfigParser.RawConfigParser()
@@ -40,7 +41,7 @@ def get_tasks():
     all = mongo.db.users.find()
     all_str = ""
     for user in all:
-        all_str+=str(user)+"<br/>"
+        all_str+=str(user)+"\n"
     return (all_str)
 
 @app.route('/ndn/auth/v1.1/users/', methods = ['GET'])
@@ -98,11 +99,28 @@ def get_key():
                      {
                        "$set": { 'pubkey': str(pubkey) }
                      })
-    return " ok ! please wait up to 24 hours for operator approval.\n you will be emailed your signed .cert \n"+str(last)
+    return "<pre> ok ! please wait up to 24 hours for operator approval.\n you will be emailed your signed .cert \n"+str(last)+"</pre>"
     
     
-    
-        
+## NEW / 'final' operator routes
+
+@app.route('/ndn/auth/v1.1/candidates/<string:inst_str>', methods = ['GET'])
+def get_candidates(inst_str):
+    # get all valid users containing 'institution_str'where cert=null
+    all = mongo.db.users.find({'cert':'', 'confirmed':True, "ndn-name": {'$regex':inst_str}})
+    all_str = ""
+    for user in all:
+        all_str+=str(user)+"<br/>"
+    return (all_str)
+
+
+@app.route('/ndn/auth/v1.1/candidates/<string:email>/addcert/<string:cert>', methods = ['GET'])
+def write_cert(email, cert):
+     # "denied" | cert_str
+     ok = mongo.db.users.update({ 'email': email },{"$set": { 'cert': cert }})
+     return str(ok)
+     
+     
 # LEGACY DICT / NONMONGO
 
 @app.route('/ndn/auth/v1.0/certs/<string:user_email>', methods = ['GET'])

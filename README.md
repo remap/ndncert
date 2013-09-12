@@ -20,23 +20,21 @@ on server:
 
 on client (script):
 
-	curl -i localhost:5000/ndn/auth/v1.0/users/
+curl -i localhost:5000/ndn/auth/v1.1/candidates/<string:inst_str>
 
-	curl -i localhost:5000/ndn/auth/v1.0/certs/
+will return all user candidates with (case-insensitive) 'institution string' (UCI, UCLA, etc)
 
-	curl -i localhost:5000/ndn/auth/v1.0/keys/
+then, 
 
-will list all users, certs, keys. 
+curl -i localhost:5000/ndn/auth/v1.1/candidates/<string:email>/addcert/<string:cert>
 
-appending an email after the user/cert/key prefix, will return the value. IE - 
+will add a (base64 encoded) cert to the specified user email. 
 
-	curl -i localhost:5000/ndn/auth/v1.0/users/[email]
+that's it ! 
 
-	curl -i localhost:5000/ndn/auth/v1.0/certs/[email]
+curl -i localhost:5000/ndn/auth/v1.1/debug
 
-	curl -i localhost:5000/ndn/auth/v1.0/keys/[email]
-	
-for more examples, see 'cm_scratch.txt'
+is useful for just dumping the entire mongodb contents. 
 
 
 To Do:
@@ -44,3 +42,4 @@ To Do:
 
 * add ndn-name prefix -> operator email routing
 * write certification shell script (to interactively and/or auto-sign new pubkeys)
+* do final email delivery of cert (likely in zip to ensure no corruption)
