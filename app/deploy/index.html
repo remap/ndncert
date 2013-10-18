@@ -2,6 +2,7 @@
 <link rel="stylesheet" type="text/css" href="css/display.css" />
 <link rel="stylesheet" type="text/css" href="http://named-data.net/wp-content/themes/discoverpro/css/foundation.css?ver=3.6" />
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type='text/javascript' src="js/jquery.validate.min.js"></script>
 <script type='text/javascript' src="js/view.js"></script>
 </head>
 <html>
@@ -12,9 +13,23 @@ Hello, please enter your email to begin NDN Testbed certification.
 </div>
 
 <p/>
-<form name="input" action="http://cert.ndn.ucla.edu:5000/ndn/auth/v1.1/users" method="get"> 
+<form name="input" id="input" action="http://cert.ndn.ucla.edu:5000/ndn/auth/v1.2/users" method="get"> 
 Email address : 
-<input type="text" name="email" class="email" size="20"></input>
+<input type="text" name="email" id="email" class="email" size="20"></input>
+<!-- new fields -->
+<br/>
+Full Name: 
+<input type="text" name="fullname" size="20"></input>
+<br/>
+Homepage URL:
+<input type="text" name="homeurl" size="20"></input>
+<br/>
+Institutional Group Name (optional):
+<input type="text" name="group" class="group" size="20"></input>
+<br/>
+Advisor Name: (optional)
+<input type="text" name="advisor" size="20"></input>
+<!-- end new fields -->
 <br>	
 <div id="ndnname" class="ndnname"></div>
 <br/><div class="nameinfo" id="nameinfo">

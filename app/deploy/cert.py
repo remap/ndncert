@@ -15,6 +15,8 @@ import hashlib
 # data
 from flask.ext.pymongo import PyMongo
 import re
+from bson import Binary, Code
+from bson.json_util import dumps
 
 import ConfigParser
 config = ConfigParser.RawConfigParser()
@@ -69,6 +71,48 @@ def get_user():
         return("please check email")
     # otherwise, user is confirmed, so let's just return that fact for now. 
     return jsonify( { 'confirmed': user['confirmed'],'email': user['email'],'NDNName': user['ndn-name'] } )
+    
+    
+# this one has more fields than 1.2 (which just had email & ndn name)
+@app.route('/ndn/auth/v1.2/users/', methods = ['GET'])
+def get_user_and_metadata():
+	#required parameters
+    user_email = request.args.get('email')
+    ndn_name = request.args.get('ndn_name')
+    fullname = ndn_name = request.args.get('fullname')
+    homeurl = ndn_name = request.args.get('homeurl')
+    #optional parameters
+    group = ""
+    advisor = ""
+    if 'group' in request.args:
+    	group = ndn_name = request.args.get('group')    
+    if 'advisor' in request.args:
+    	advisor = request.args.get('advisor')    	
+    user =  mongo.db.users.find_one({"email":user_email})
+    if (user == None):
+        #if user does not exist, make one
+        user = {
+            'email': user_email,
+            'ndn-name': ndn_name,
+            'pubkey': '', 
+            'cert': '', #cert is base64 encoded binary
+            'confirmed': False,
+            'fullname': fullname,
+            'homeurl': homeurl,
+            'group': group,
+            'advisor': advisor,
+        }
+        #make a new one
+        mongo.db.users.insert(user)
+        mailUser(user)
+        return("please check email")
+    #if user exists, but is not confirmed
+    elif(user['confirmed'] == False):
+        #send confirmation email
+        mailUser(user)
+        return("please check email")
+    # otherwise, user is confirmed, so let's just return that fact for now. 
+    return "user already in database. <br/>shall we still send an email, in case they want to update key? hmmm.<br/> meanwhile, debug: <br/> "+dumps( user )
     
 @app.route('/ndn/auth/v1.1/validate/', methods = ['GET'])
 def valid_email():

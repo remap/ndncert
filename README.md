@@ -43,3 +43,17 @@ To Do:
 * add ndn-name prefix -> operator email routing
 * write certification shell script (to interactively and/or auto-sign new pubkeys)
 * do final email delivery of cert (likely in zip to ensure no corruption)
+
+
+Development Notes:
+==================
+
+the host for cert.ndn.ucla.edu is 164.67.204.101
+path is /var/www/ndncert (which corresponds to github app/deploy/)
+contact nano@remap.ucla.edu if you want access. 
+
+to work locally, i ssh -L 27017:localhost:27017 164.67.204.101
+
+so i can use a local mongodb viewer (like rockmongo) to control mongo storage while debugging. 
+
+
