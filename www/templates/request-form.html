@@ -1,17 +1,35 @@
 {% extends "layout.html" %}
 
 {% block instructions %}
-Hello, please enter your email to begin NDN Testbed certification.
+Please fill information about you and submit NDN certfication request.  <br/>
+
+<p>To generate NDN certification request, please follow the instructions below:
+
+<ul>
+  <li>Ensure that you have installed NDNx</li>
+  <li>Open terminal and issue the following command:<br/>
+
+  <pre>
+      ndn-keygen -k -n SOMENAME
+  </pre>
+  </li>
+
+  <li>
+  Copy the output of the command into the 'NDN certification request' field below
+  </li>
+</ul>
+
 {% endblock %}
 
 {% block body %}
 <p/>
-<form name="input" id="input" action="{{ URL }}/ndn/auth/v1.2/users" method="get"> 
-Email address: 
-<input type="text" name="email" id="email" class="email" size="20"></input>
-<!-- new fields -->
+<form name="input" id="input" action="{{ URL }}??" method="post"> 
+
 <br/>
-Full Name: 
+First Name: 
+<input type="text" name="fullname" size="20"></input>
+<br/>
+Last Name: 
 <input type="text" name="fullname" size="20"></input>
 <br/>
 Homepage URL:
@@ -22,12 +40,11 @@ Institutional Group Name (optional):
 <br/>
 Advisor Name: (optional)
 <input type="text" name="advisor" size="20"></input>
-<!-- end new fields -->
-<br>	
-<div id="ndnname" class="ndnname"></div>
-<br/><div class="nameinfo" id="nameinfo">
-(this is the ndn name that your public key and certificate will be published under)</div><br>
-<input type="hidden" name="ndn_name" id="ndn_name" value="">
+<br/>
+NDN certification request
+<textarea name="key"></textarea>
+
+<input type="hidden" name="email" id="email" value="{{ email }}"></input>
 <input type="submit" value="Submit"></input>
 </form>
 <p/>

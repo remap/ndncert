@@ -6,6 +6,7 @@
 #html/rest
 from flask import Flask, jsonify, abort, make_response, request, render_template
 from flask.ext.pymongo import PyMongo
+from flask.ext.mail import Mail, Message
 
 # mail
 import smtplib
@@ -34,8 +35,9 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 # name of app is also name of mongodb "database"
 app = Flask("ndncert", template_folder=tmpl_dir)
+app.config['MAIL_SERVER'] = SMTP_SERVER
 mongo = PyMongo(app)
-
+mail = Mail(app)
 
 @app.route('/', methods = ['GET'])
 @app.route('/tokens/request/', methods = ['GET', 'POST'])
@@ -64,11 +66,18 @@ def request_token():
             'created_on': datetime.datetime.utcnow(), # to periodically remove unverified tokens
             }
         mongo.db.tokens.insert(token)
-        mailTokenToUser(token)
+
+        msg = Message("[NDN Certification] Request confirmation",
+                      sender = SMTP_FROM,
+                      recipients = [user_email],
+                      body = render_template('token-email.txt', URL=URL, **token),
+                      html = render_template('token-email.html', URL=URL, **token))
+        mail.send(msg)
+        
         return render_template('token-sent.html', email=user_email)
 
-
-@app.route('/cert-requests/submit/', methods = ['GET', 'POST'])
+# @app.route('/cert-requests/submit/', methods = ['GET', 'POST'])
+@app.route('/cert-requests/submit/', methods = ['GET'])
 def submit_request():
     if request.method == 'GET':
         # Email and token (to authorize the request==validate email)
@@ -82,7 +91,6 @@ def submit_request():
         # infer parameters from email
         try:
             # pre-validation
-            return user_email
             params = get_operator_for_email(user_email)
         except:
             abort(403)
@@ -92,8 +100,8 @@ def submit_request():
     
     else: # 'POST'
         # Email and token (to authorize the request==validate email)
-        user_email = request.args.get('email')
-        user_token = request.args.get('token')
+        user_email = request.form['email']
+        user_token = request.form['token']
     
         token = mongo.db.tokens.find_one({'email':user_email, 'token':user_token})
         if (token == None):
@@ -122,7 +130,7 @@ def submit_request():
 
         # check if the user supplied correct name for the certificate request
             
-        request = {
+        cert_request = {
                 'operator_id': params['operator']['_id'],
                 'email': user_email,
                 'firstname': user_firstname,
@@ -133,7 +141,7 @@ def submit_request():
                 'key': user_cert_request,
             }
         #make a new one
-        mongo.db.requests.insert (request)
+        mongo.db.requests.insert (cert_request)
         
         return render_template('request-thankyou.html')
 
@@ -224,4 +232,5 @@ def get_operator_for_email(email):
     return {'operator':operator, 'user':user, 'domain':domain, 'ndn-domain': ndnify(domain)}
 
 if __name__ == '__main__':
-    app.run(debug = True, host='0.0.0.0')
+    app.run(
+        debug = True, host='0.0.0.0')

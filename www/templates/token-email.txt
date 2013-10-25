@@ -1,0 +1,8 @@
+Greetings!
+
+Somebody has initiated issue of NDN Testbed certificate. If it was you, please visit the following URL to continue the process: 
+
+{{ URL }}/cert-requests/submit/?email={{ email }}&token={{ token }}
+
+Sincerely,
+NDN Testbed Certificate robot
