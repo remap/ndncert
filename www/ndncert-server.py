@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 
 # dependencies - flask, flask-pymongo
 # pip install Flask, Flask-PyMongo
@@ -22,7 +22,7 @@ import ndn
 ###                                CONFIG                                    ###
 ################################################################################
 
-URL = "http://ndncert.named-data.net"
+URL = "http://ndncert.named-data.net:5000"
 
 SMTP_SERVER = "localhost"
 SMTP_FROM = "NDN Testbed Certificate Robot <noreply-ndncert@ndn.ucla.edu>"
@@ -44,17 +44,18 @@ def request_token():
         #################################################
         ###              Token request                ###
         #################################################
-        return render_template('token-request-form.html')
+        return render_template('token-request-form.html', URL=URL)
     
     else: # 'POST'    
         #################################################
         ###        Token creation & emailing          ###
         #################################################
-        user_email = request.args.get('email')
+        user_email = request.form['email']
         try:
             # pre-validation
             get_operator_for_email(user_email)
         except:
+            return 'some shit with %s' % user_email
             return render_template('error-unknown-site.html')
         
         token = {
@@ -64,7 +65,7 @@ def request_token():
             }
         mongo.db.tokens.insert(token)
         mailTokenToUser(token)
-        return render_template('token-sent.html', **token)
+        return render_template('token-sent.html', email=user_email)
 
 
 @app.route('/cert-requests/submit/', methods = ['GET', 'POST'])
@@ -81,6 +82,7 @@ def submit_request():
         # infer parameters from email
         try:
             # pre-validation
+            return user_email
             params = get_operator_for_email(user_email)
         except:
             abort(403)
@@ -98,7 +100,7 @@ def submit_request():
             abort(403)
     
         # OK. authorized, proceed to the next step
-        token.delete()
+        mongo.db.tokens.remove(token)
 
         # Now, do basic validation of correctness of user input, save request in the database and notify the operator
         user_firstname = request.args.get('firstname')
@@ -214,8 +216,7 @@ def ndnify (dnsName):
 def get_operator_for_email(email):
     # very basic pre-validation
     user, domain = email.split('@', 2)
-
-    operator = mongo.db.operator.find_one({'site_emails': {'$in', email_domain}})
+    operator = mongo.db.operators.find_one({'site_emails': {'$in':[ domain ]}})    
     if (operator == None):
         raise Exception ("Unknown site for domain [%s]" % domain)
 

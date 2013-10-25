@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block instructions %}
+Hello, please enter your email to begin NDN Testbed certification.
+{% endblock %}
+
+{% block body %}
+<p/>
+<form name="input" id="input" action="{{ URL }}/tokens/request/" method="post"> 
+Email address: 
+<input type="text" name="email" id="email" class="email" size="20"></input>
+<input type="submit" value="Submit"></input>
+</form>
+<p/>
+{% endblock %}
+
+</html>

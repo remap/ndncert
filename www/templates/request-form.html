@@ -1,20 +1,13 @@
-<head>
-<link rel="stylesheet" type="text/css" href="css/display.css" />
-<link rel="stylesheet" type="text/css" href="http://named-data.net/wp-content/themes/discoverpro/css/foundation.css?ver=3.6" />
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script type='text/javascript' src="js/jquery.validate.min.js"></script>
-<script type='text/javascript' src="js/view.js"></script>
-</head>
-<html>
+{% extends "layout.html" %}
 
-
-<div id="instructions">
+{% block instructions %}
 Hello, please enter your email to begin NDN Testbed certification.
-</div>
+{% endblock %}
 
+{% block body %}
 <p/>
-<form name="input" id="input" action="http://cert.ndn.ucla.edu:5000/ndn/auth/v1.2/users" method="get"> 
-Email address : 
+<form name="input" id="input" action="{{ URL }}/ndn/auth/v1.2/users" method="get"> 
+Email address: 
 <input type="text" name="email" id="email" class="email" size="20"></input>
 <!-- new fields -->
 <br/>
@@ -38,10 +31,6 @@ Advisor Name: (optional)
 <input type="submit" value="Submit"></input>
 </form>
 <p/>
+{% endblock %}
 
-
-<!-- <p/> -->
-<!-- <div class="info"> -->
-<!-- for more about this project, see the <a href="http://named-data.net/publications/techreports/trpublishkey-rev2/" target="_blank">testbed trust model paper</a>. -->
-<!-- </div> -->
 </html>
