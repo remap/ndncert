@@ -76,8 +76,7 @@ def request_token():
         
         return render_template('token-sent.html', email=user_email)
 
-# @app.route('/cert-requests/submit/', methods = ['GET', 'POST'])
-@app.route('/cert-requests/submit/', methods = ['GET'])
+@app.route('/cert-requests/submit/', methods = ['GET', 'POST'])
 def submit_request():
     if request.method == 'GET':
         # Email and token (to authorize the request==validate email)
@@ -94,9 +93,9 @@ def submit_request():
             params = get_operator_for_email(user_email)
         except:
             abort(403)
-            
+
         # don't delete token for now, just give user a form to input stuff
-        return render_template('request-form.html', **params)
+        return render_template('request-form.html', URL=URL, email=user_email, token=user_token, **params)
     
     else: # 'POST'
         # Email and token (to authorize the request==validate email)
@@ -106,21 +105,20 @@ def submit_request():
         token = mongo.db.tokens.find_one({'email':user_email, 'token':user_token})
         if (token == None):
             abort(403)
-    
+
         # OK. authorized, proceed to the next step
         mongo.db.tokens.remove(token)
 
         # Now, do basic validation of correctness of user input, save request in the database and notify the operator
-        user_firstname = request.args.get('firstname')
-        user_lastname  = request.args.get('lastname')    
-        user_homeurl   = request.args.get('homeurl')
+        user_fullname = request.form['fullname']
+        user_homeurl   = request.form['homeurl']
         #optional parameters
-        user_group = request.args.get('group') if 'group' in request.args else ""
-        user_advisor = request.args.get('advisor') if 'advisor' in request.args else ""
-    
-        user_cert_request = base64.b64decode(request.args.get('key'))
-        user_cert_data = ndn.Data.fromWire(user_cert_request)
-        
+        user_group   = request.form['group']   if 'group'   in request.form else ""
+        user_advisor = request.form['advisor'] if 'advisor' in request.form else ""
+
+        user_cert_request = base64.b64decode(request.form['cert-request'])
+        user_cert_data    = ndn.Data.fromWire(user_cert_request)
+
         # infer parameters from email
         try:
             # pre-validation
@@ -129,18 +127,19 @@ def submit_request():
             abort(403)
 
         # check if the user supplied correct name for the certificate request
-            
+        if not params['assigned_namespace'].isPrefixOf(user_cert_data.name):
+            abort(403)
+        
         cert_request = {
-                'operator_id': params['operator']['_id'],
+                'operator_id': str(params['operator']['_id']),
+                'fullname': user_fullname,
+                'organization': params['operator']['site_name'],
                 'email': user_email,
-                'firstname': user_firstname,
-                'lastname': user_lastname,
                 'homeurl': user_homeurl,
                 'group': user_group,
                 'advisor': user_advisor,
-                'key': user_cert_request,
+                'cert-request': base64.b64encode(user_cert_request), # for no particular reason, re-encoding again...
             }
-        #make a new one
         mongo.db.requests.insert (cert_request)
         
         return render_template('request-thankyou.html')
@@ -228,9 +227,14 @@ def get_operator_for_email(email):
     if (operator == None):
         raise Exception ("Unknown site for domain [%s]" % domain)
 
+    ndn_domain = ndnify(domain)
+    assigned_namespace = \
+        ndn.Name('/ndn') \
+        .append(ndn_domain) \
+        .append(user)
+    
     # return various things
-    return {'operator':operator, 'user':user, 'domain':domain, 'ndn-domain': ndnify(domain)}
+    return {'operator':operator, 'user':user, 'domain':domain, 'ndn_domain':ndn_domain, 'assigned_namespace':assigned_namespace}
 
 if __name__ == '__main__':
-    app.run(
-        debug = True, host='0.0.0.0')
+    app.run(debug = True, host='0.0.0.0')

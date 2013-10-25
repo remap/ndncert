@@ -10,7 +10,7 @@ Please fill information about you and submit NDN certfication request.  <br/>
   <li>Open terminal and issue the following command:<br/>
 
   <pre>
-      ndn-keygen -k -n SOMENAME
+      ndn-keygen {{ assigned_namespace }}
   </pre>
   </li>
 
@@ -23,13 +23,10 @@ Please fill information about you and submit NDN certfication request.  <br/>
 
 {% block body %}
 <p/>
-<form name="input" id="input" action="{{ URL }}??" method="post"> 
+<form name="input" id="input" action="{{ URL }}/cert-requests/submit/" method="post"> 
 
 <br/>
-First Name: 
-<input type="text" name="fullname" size="20"></input>
-<br/>
-Last Name: 
+Full Name: 
 <input type="text" name="fullname" size="20"></input>
 <br/>
 Homepage URL:
@@ -42,9 +39,10 @@ Advisor Name: (optional)
 <input type="text" name="advisor" size="20"></input>
 <br/>
 NDN certification request
-<textarea name="key"></textarea>
+<textarea name="cert-request"></textarea>
 
-<input type="hidden" name="email" id="email" value="{{ email }}"></input>
+<input type="hidden" name="email" value="{{ email }}"></input>
+<input type="hidden" name="token" value="{{ token }}"></input>
 <input type="submit" value="Submit"></input>
 </form>
 <p/>
