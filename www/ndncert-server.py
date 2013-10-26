@@ -18,6 +18,9 @@ import random
 import datetime
 import base64
 import ndn
+import json
+
+from bson import json_util
 
 ################################################################################
 ###                                CONFIG                                    ###
@@ -138,6 +141,7 @@ def submit_request():
                 'homeurl': user_homeurl,
                 'group': user_group,
                 'advisor': user_advisor,
+                'cert-name': str(ndn.Name(user_cert_data.name[:-2])),
                 'cert-request': base64.b64encode(user_cert_request), # for no particular reason, re-encoding again...
             }
         mongo.db.requests.insert (cert_request)
@@ -145,18 +149,70 @@ def submit_request():
         return render_template('request-thankyou.html')
 
 
-# ## NEW / 'final' operator routes
+@app.route('/cert-requests/get/', methods = ['POST'])
+def get_candidates():
+    keyLocator = request.form['keyLocator']
+    timestamp  = request.form['timestamp']
+    signature  = request.form['signature']
+        
+    query = \
+        ndn.Name('/cert-requests/get') \
+        .append(keyLocator) \
+        .append(timestamp) \
+        .append(base64.b64decode(signature))
 
-# @app.route('/ndn/auth/v1.1/candidates/<string:inst_str>', methods = ['GET'])
-# def get_candidates(inst_str):
-#     # get all valid users containing 'institution_str'where cert=null
-#     all = mongo.db.users.find({'cert':'', 'confirmed':True, "ndn-name": {'$regex':inst_str}})
-#     all_str = ""
-#     for user in all:
-#         all_str+=str(user)+"<br/>"
-#     return (all_str)
+    operator = mongo.db.operators.find_one({'site_prefix': keyLocator})
+    if operator == None:
+        abort(403)
+
+    # do verification
+
+    requests = mongo.db.requests.find({'operator_id': str(operator['_id'])})
+    output = []
+    for req in requests:
+        output.append (req)
+
+    # return json.dumps (output)
+    return json.dumps(output, default=json_util.default)
+
+@app.route('/cert/submit/', methods = ['POST'])
+def submit_certificate():
+    data = ndn.Data.fromWire(base64.b64decode(request.form['data']))
+
+    keyLocator = data.signedInfo.keyLocator.keyName
+
+    operator = mongo.db.operators.find_one({'site_prefix': str(keyLocator)})
+    if operator == None:
+        abort(403)
+
+    # verify data packet
+    # verify timestamp
+
+    if len(data.content) == 0:
+        cert = {'name': str(data.name),
+                'cert': request.form['data']}
+
+        db.mongo.certs.insert(cert)
+        
+        return "OK. Certificate has been denied"
+    else:
+        return "OK. Certificate has been approved"
 
 
+@app.route('/cert/get/', methods = ['GET'])
+def get_certificate():
+    name = request.args.get['name']
+    ndn_name = ndn.Name(name)
+
+    cert = mongo.db.certs.find_one({'name': name})
+    if cert == None:
+        abort(404)
+
+    response = make_response(base64.b64decode(cert['cert']))
+    response.headers['Content-Type'] = 'application/octet-stream'
+    response.headers['Content-Disposition'] = 'attachment; filename=%s.ndncert' % ndn_name[-3]
+    return response
+    
 # @app.route('/ndn/auth/v1.1/candidates/<string:email>/addcert/<string:cert>', methods = ['GET'])
 # def write_cert(email, cert):
 #      # "denied" | cert_str
@@ -181,35 +237,6 @@ def submit_request():
 #     return jsonify( { 'pubkey': user[0]['pubkey'],'email': user[0]['email'] } )
 
 
-
-
-def mailTokenToUser(token):
-    print "Suppose to send data for token"
-    pass
-    # TO = user['email']
-    # ndnname = user['ndn-name']
-
-    # SUBJECT = "Message From " + FROM
-    # m = hashlib.sha256()
-    # m.update(str(user['_id']))
-    # TEXT = 'please visit following URL to authorize your new NDN trust name, '+user['ndn-name']+'\n'
-    # TEXT += URL+'/ndn/auth/v1.1/validate/?email='+user['email']+'&token='+str(m.hexdigest())
-
-    # # Prepare actual message
-
-    # message = """\
-    # From: %s
-    # To: %s
-    # Subject: %s
-
-    # %s
-    # """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
-
-    # # Send the mail
-
-    # server = smtplib.SMTP(SERVER)
-    # server.sendmail(FROM, TO, message)
-    # server.quit()
 
 def generate_token():
     return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(60)])
