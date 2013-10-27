@@ -3,7 +3,7 @@ Greetings, {{ fullname }}!
 Your NDN certificate has been approved and is ready for download.  You
 can download the certificate using the following URL:
 
-{{ URL }}/cert-get/?name={{ cert_name }}
+{{ URL }}/cert/get/?name={{ quoted_cert_name }}
 
 After you have downloaded the certificate, please open command line
 and issue the following command to install the issued certificate:

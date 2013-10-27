@@ -165,14 +165,14 @@ def submit_request():
 
 @app.route('/cert/get/', methods = ['GET'])
 def get_certificate():
-    name = urllib.unquote(request.args.get['name'])
-    ndn_name = ndn.Name(name)
+    name = urllib.unquote(request.args.get('name'))
+    ndn_name = ndn.Name(str(name))
 
-    cert = mongo.db.certs.find_one({'name': name})
+    cert = mongo.db.certs.find_one({'name': str(name)})
     if cert == None:
         abort(404)
 
-    response = make_response(base64.b64decode(cert['cert']))
+    response = make_response(cert['cert'])
     response.headers['Content-Type'] = 'application/octet-stream'
     response.headers['Content-Disposition'] = 'attachment; filename=%s.ndncert' % str(ndn_name[-3])
     return response
@@ -211,19 +211,20 @@ def get_candidates():
 def submit_certificate():
     data = ndn.Data.fromWire(base64.b64decode(request.form['data']))
 
-    keyLocator = data.signedInfo.keyLocator.keyName
+    keyLocator = data.signedInfo.keyLocator.keyName[:-4]
 
     operator = mongo.db.operators.find_one({'site_prefix': str(keyLocator)})
     if operator == None:
+        return 'operator not found'
         abort(403)
 
     # verify data packet
     # verify timestamp
 
     cert_name = str(extract_cert_name(data.name))
-    request = mongo.db.requests.find_one({'cert_name': cert_name})
+    cert_request = mongo.db.requests.find_one({'cert_name': cert_name})
 
-    if request == None:
+    if cert_request == None:
         abort(403)
     
     if len(data.content) == 0:
@@ -234,7 +235,7 @@ def submit_certificate():
         #               html = render_template('token-email.html', URL=app.config['URL'], **token))
         # mail.send(msg)
         
-        mongo.db.requests.remove(request)
+        mongo.db.requests.remove(cert_request)
         # may be notify user that request has been denied, may be not...
         # (no deny reason for now as well)
         # eventually, need to check data.type: if NACK, then content contains reason for denial
@@ -251,18 +252,18 @@ def submit_certificate():
 
         msg = Message("[NDN Certification] NDN certificate issued",
                       sender = app.config['MAIL_FROM'],
-                      recipients = [(request['fullname'], request['email'])],
+                      recipients = [cert_request['email']],
                       body = render_template('cert-issued-email.txt',  
                                              URL=app.config['URL'], 
-                                             cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
-                                             **request),
+                                             quoted_cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
+                                             **cert_request),
                       html = render_template('cert-issued-email.html', 
                                              URL=app.config['URL'], 
-                                             cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
-                                             **request))
+                                             quoted_cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
+                                             **cert_request))
         mail.send(msg)
 
-        mongo.db.requests.remove(request)
+        mongo.db.requests.remove(cert_request)
         
         return "OK. Certificate has been approved and notification sent to the requester"
 
