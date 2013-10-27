@@ -2,12 +2,16 @@
 
 {% block error %}
 {% if error is defined %}
+<div class="error">
 {{ error }}
+</div>
 {% endif %}
 {% endblock %}
 
 {% block instructions %}
-Please fill information about you and submit NDN certfication request.  <br/>
+<p>Please fill information about you and submit NDN certfication request.</p>
+
+<p>Note that a limited number of characters are allowed to be included in NDN certificates, including lower and upper case latin letters, numbers, and punctuation symbols.</p>
 
 <p>To generate NDN certification request, please follow the instructions below:
 
@@ -16,7 +20,7 @@ Please fill information about you and submit NDN certfication request.  <br/>
   <li>Open terminal and issue the following command:<br/>
 
   <pre>
-      ndn-keygen {{ assigned_namespace }}
+      ndnsec-keygen {{ assigned_namespace }}
   </pre>
   </li>
 
@@ -45,7 +49,7 @@ Advisor Name: (optional)
 <input type="text" name="advisor" size="20"></input>
 <br/>
 NDN certification request
-<textarea name="cert-request"></textarea>
+<textarea class="cert-request" name="cert-request"></textarea>
 
 <input type="hidden" name="email" value="{{ email }}"></input>
 <input type="hidden" name="token" value="{{ token }}"></input>

@@ -8,6 +8,6 @@ can download the certificate using the following URL:
 After you have downloaded the certificate, please open command line
 and issue the following command to install the issued certificate:
 
-    ndn-install-cert <download_folder>/{{ cert_id }}.ndncert
+    ndnsec-install-cert <download_folder>/{{ cert_id }}.ndncert
 
 Sincerely, NDN Testbed Certificate robot

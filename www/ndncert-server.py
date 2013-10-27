@@ -228,18 +228,18 @@ def submit_certificate():
         abort(403)
     
     if len(data.content) == 0:
-        # msg = Message("[NDN Certification] Request confirmation",
-        #               sender = app.config['MAIL_FROM'],
-        #               recipients = [user_email],
-        #               body = render_template('token-email.txt', URL=app.config['URL'], **token),
-        #               html = render_template('token-email.html', URL=app.config['URL'], **token))
-        # mail.send(msg)
-        
-        mongo.db.requests.remove(cert_request)
-        # may be notify user that request has been denied, may be not...
-        # (no deny reason for now as well)
+        # (no deny reason for now)
         # eventually, need to check data.type: if NACK, then content contains reason for denial
         #                                      if KEY, then content is the certificate
+        
+        msg = Message("[NDN Certification] Rejected certification",
+                      sender = app.config['MAIL_FROM'],
+                      recipients = [cert_request['email']],
+                      body = render_template('cert-rejected-email.txt', URL=app.config['URL'], **cert_request),
+                      html = render_template('cert-rejected-email.html', URL=app.config['URL'], **cert_request))
+        mail.send(msg)
+        
+        mongo.db.requests.remove(cert_request)
         
         return "OK. Certificate has been denied"
     else:

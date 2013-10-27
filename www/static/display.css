@@ -1,51 +1,30 @@
 
-.ndnname {
-	color: black;
-	font-size: 32pt;
-	font-family: Helvetica, Verdana, Arial, sans-serif;
-	font-weight:bold;
-	text-align:left;
-	z-index:2;
-}
-
-.key {
-	color: white;
-	z-index:3;
-	position: absolute;
-	top:1000px;
-	left:1150px;
-}
-.model {
-	color: white;	
-	z-index: 1;
-	position: absolute;
-	left:30px; 
-	top: 290px;
-	}
-
 .info {
-	color: black;
-	font-family: Helvetica, Verdana, Arial, sans-serif;
-	font-size: 8pt;
+    color: black;
+    font-size: 8pt;
 }
 
-#instructions {
-	font-size: 14pt;
-	font-family: Helvetica, Verdana, Arial, sans-serif;
-	font-weight:bold;
-	color: black;
-	z-index: 2
+.instructions {
+    font-size: 14pt;
+    color: black;
+    z-index: 2
 }
 
 
 .nameinfo {
-	font-size: 12pt;
-	font-family: Helvetica, Verdana, Arial, sans-serif;
-	display:none;
-	color: black;
-	z-index: 2
+    font-size: 12pt;
+    display:none;
+    color: black;
+    z-index: 2
 }
 
 .error {
-        color: red;
+    margin: 20px;
+    color: red;
+    font-weight: bold;
+    border: 2px solid red;
+}
+
+textarea.cert-request {
+    height: 300px;
 }
