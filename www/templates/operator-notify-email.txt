@@ -1,0 +1,11 @@
+Hi, {{ operator_name }}!
+
+An NDN testbed user {{ fullname }} has requested issue of the NDN
+certificate.
+
+Please, login to your certification host and run "ndnop-process-requests" 
+command-line tool to get more information about the request(s) and approve
+or reject the request(s).
+
+Sincerely, 
+NDN Testbed Certificate robot

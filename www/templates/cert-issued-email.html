@@ -1,0 +1,22 @@
+<p><b>Greetings, {{ fullname }} !</b></p>
+
+<p>
+Your NDN certificate has been approved and is ready for download.  You
+can download the certificate using the following URL:
+</p>
+
+<p><a href="{{ URL }}/cert-get/?name={{ cert_name }}">{{ URL }}/cert-get/?name={{ cert_name }}</a>
+</p>
+
+<p>
+After you have downloaded the certificate, please open command line
+and issue the following command to install the issued certificate:
+</p>
+
+<pre>
+    ndn-install-cert <download_folder>/{{ cert_id }}.ndncert
+</pre>
+
+<p>Sincerely,<br/>
+NDN Testbed Certificate robot
+</p>

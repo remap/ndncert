@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 
+{% block error %}
+{% if error is defined %}
+{{ error }}
+{% endif %}
+{% endblock %}
+
 {% block instructions %}
 Please fill information about you and submit NDN certfication request.  <br/>
 
