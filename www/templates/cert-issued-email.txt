@@ -1,7 +1,13 @@
 Greetings, {{ fullname }}!
 
-Your NDN certificate has been approved and is ready for download.  You
-can download the certificate using the following URL:
+Your NDN certificate has been approved and is ready for download.  
+You can download and install it using the following command:
+
+    ndnsec-install-cert "{{ URL }}/cert/get/?name={{ quoted_cert_name }}"
+
+
+
+Alternatively, you can download the certificate and then install it using the downloaded file:
 
 {{ URL }}/cert/get/?name={{ quoted_cert_name }}
 
@@ -10,4 +16,5 @@ and issue the following command to install the issued certificate:
 
     ndnsec-install-cert <download_folder>/{{ cert_id }}.ndncert
 
-Sincerely, NDN Testbed Certificate robot
+Sincerely, 
+NDN Testbed Certificate robot

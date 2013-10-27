@@ -1,11 +1,21 @@
 <p><b>Greetings, {{ fullname }}!</b></p>
 
 <p>
-Your NDN certificate has been approved and is ready for download.  You
-can download the certificate using the following URL:
+Your NDN certificate has been approved and is ready for download.
+You can download and install it using the following command:
 </p>
 
-<p><a href="{{ URL }}/cert/get/?name={{ quoted_cert_name }}">{{ URL }}/cert-get/?name={{ quoted_cert_name }}</a>
+<pre>
+    ndnsec-install-cert "{{ URL }}/cert/get/?name={{ quoted_cert_name }}"
+</pre>
+
+<p/>
+
+<p>
+Alternatively, you can download the certificate and then install it using the downloaded file:
+</p>
+
+<p><a href="{{ URL }}/cert/get/?name={{ quoted_cert_name }}">{{ URL }}/cert/get/?name={{ quoted_cert_name }}</a>
 </p>
 
 <p>

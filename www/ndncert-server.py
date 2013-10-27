@@ -165,7 +165,7 @@ def submit_request():
 
 @app.route('/cert/get/', methods = ['GET'])
 def get_certificate():
-    name = urllib.unquote(request.args.get('name'))
+    name = request.args.get('name')
     ndn_name = ndn.Name(str(name))
 
     cert = mongo.db.certs.find_one({'name': str(name)})
