@@ -20,11 +20,17 @@
 
 .error {
     margin: 20px;
+    padding: 10px;
     color: red;
     font-weight: bold;
+    font-size: 16pt;
     border: 2px solid red;
 }
 
 textarea.cert-request {
     height: 300px;
+}
+
+input {
+    background-color: #fcf8e3;
 }
