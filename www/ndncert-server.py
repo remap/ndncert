@@ -211,11 +211,11 @@ def get_candidates():
 def submit_certificate():
     data = ndn.Data.fromWire(base64.b64decode(request.form['data']))
 
-    keyLocator = data.signedInfo.keyLocator.keyName[:-4]
+    operator_prefix = data.signedInfo.keyLocator.keyName[:-3]
 
-    operator = mongo.db.operators.find_one({'site_prefix': str(keyLocator)})
+    operator = mongo.db.operators.find_one({'site_prefix': str(operator_prefix)})
     if operator == None:
-        return 'operator not found'
+        return make_response('operator not found [%s]' % operator_prefix, 403)
         abort(403)
 
     # verify data packet
