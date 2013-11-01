@@ -3,18 +3,26 @@ Greetings, {{ fullname }}!
 Your NDN certificate has been approved and is ready for download.  
 You can download and install it using the following command:
 
-    ndnsec-install-cert "{{ URL }}/cert/get/?name={{ quoted_cert_name }}"
+ndnsec-install-cert "{{ URL }}/cert/get/?name={{ quoted_cert_name }}"
+
+After you installed the certificate, you can generate Data Signing Key (dsk) and push it in your local repository using the following commands:
+
+ndnsec-dskgen {{ assigned_namespace }}
+ndnsec-dump-certificate --repo-output -i {{ assigned_namespace }}
 
 
 
-Alternatively, you can download the certificate and then install it using the downloaded file:
+To see what certificates has been installed on the system and which ones are default, you can use the following command:
 
-{{ URL }}/cert/get/?name={{ quoted_cert_name }}
+ndnsec-ls-identity -C
 
-After you have downloaded the certificate, please open command line
-and issue the following command to install the issued certificate:
 
-    ndnsec-install-cert <download_folder>/{{ cert_id }}.ndncert
+
+Other useful commands include:
+
+ndnsec-dump-certificate "<certificate-name>"
+ndnsec-get-default
+ndnsec-set-default -C "<certificate-name>"
 
 Sincerely, 
 NDN Testbed Certificate robot

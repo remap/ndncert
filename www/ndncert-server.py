@@ -218,6 +218,7 @@ def submit_certificate():
         return make_response('operator not found [%s]' % operator_prefix, 403)
         abort(403)
 
+        
     # verify data packet
     # verify timestamp
 
@@ -227,6 +228,14 @@ def submit_certificate():
     if cert_request == None:
         abort(403)
     
+    # infer parameters from email
+    try:
+        # pre-validation
+        params = get_operator_for_email(cert_request['email'])
+    except:
+        abort(403)
+        return
+        
     if len(data.content) == 0:
         # (no deny reason for now)
         # eventually, need to check data.type: if NACK, then content contains reason for denial
@@ -255,10 +264,12 @@ def submit_certificate():
                       recipients = [cert_request['email']],
                       body = render_template('cert-issued-email.txt',  
                                              URL=app.config['URL'], 
+                                             assigned_namespace=params['assigned_namespace'],
                                              quoted_cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
                                              **cert_request),
                       html = render_template('cert-issued-email.html', 
                                              URL=app.config['URL'], 
+                                             assigned_namespace=params['assigned_namespace'],
                                              quoted_cert_name=urllib.quote(cert['name'], ''), cert_id=str(data.name[-3]), 
                                              **cert_request))
         mail.send(msg)
