@@ -5,12 +5,6 @@ You can download and install it using the following command:
 
 ndnsec-install-cert "{{ URL }}/cert/get/?name={{ quoted_cert_name }}"
 
-After you installed the certificate, you can generate Data Signing Key (dsk) and push it in your local repository using the following commands:
-
-ndnsec-dskgen {{ assigned_namespace }}
-ndnsec-dump-certificate --repo-output -i {{ assigned_namespace }}
-
-
 
 To see what certificates has been installed on the system and which ones are default, you can use the following command:
 
