@@ -1,7 +1,7 @@
 ####################
 # General settings #
 ####################
-URL = "http://ndncert.named-data.net:5000"
+URL = "http://ndncert.named-data.net"
 
 #################
 # SMTP settings #

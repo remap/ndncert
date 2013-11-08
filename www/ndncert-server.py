@@ -177,6 +177,14 @@ def get_certificate():
     response.headers['Content-Disposition'] = 'attachment; filename=%s.ndncert' % str(ndn_name[-3])
     return response
 
+@app.route('/cert/list/', methods = ['GET'])
+def get_certificates():
+    certificates = mongo.db.certs.find().sort([('name', 1)])
+    return make_response(render_template('cert-list.txt', certificates=certificates), 200, {
+            'Content-Type': 'text/plain'
+            })
+
+
 #############################################################################################
 # Operator-facing components
 #############################################################################################

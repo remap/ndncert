@@ -1,0 +1,2 @@
+{% for cert in certificates %}{{ cert.name }}
+{% endfor %}
