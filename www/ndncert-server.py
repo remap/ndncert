@@ -302,15 +302,28 @@ def ndnify (dnsName):
 def get_operator_for_email(email):
     # very basic pre-validation
     user, domain = email.split('@', 2)
-    operator = mongo.db.operators.find_one({'site_emails': {'$in':[ domain ]}})    
+    operator = mongo.db.operators.find_one({'site_emails': {'$in':[ domain ]}})
     if (operator == None):
-        raise Exception ("Unknown site for domain [%s]" % domain)
+        operator = mongo.db.operators.find_one({'site_emails': {'$in':[ 'guest' ]}})
 
-    ndn_domain = ndnify(domain)
-    assigned_namespace = \
-        ndn.Name('/ndn') \
-        .append(ndn_domain) \
-        .append(user)
+        if (operator == None):
+            raise Exception ("Unknown site for domain [%s]" % domain)
+
+        # Special handling for guests
+        ndn_domain = ndn.Name("/ndn/guest")
+        assigned_namespace = \
+            ndn.Name('/ndn/guest') \
+            .append(email)
+    else:
+        if domain == "operators.named-data.net":
+            ndn_domain = ndn.Name(user)
+            assigned_namespace = ndn.Name(user)
+        else:
+            ndn_domain = ndnify(domain)
+            assigned_namespace = \
+                ndn.Name('/ndn') \
+                .append(ndn_domain) \
+                .append(user)
     
     # return various things
     return {'operator':operator, 'user':user, 'domain':domain, 'ndn_domain':ndn_domain, 'assigned_namespace':assigned_namespace}
