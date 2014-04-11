@@ -14,9 +14,9 @@ ndnsec-ls-identity -C
 
 Other useful commands include:
 
-ndnsec-dump-certificate "<certificate-name>"
+ndnsec-dump-certificate
 ndnsec-get-default
-ndnsec-set-default -C "<certificate-name>"
+ndnsec-set-default
 
 Sincerely, 
 NDN Testbed Certificate robot

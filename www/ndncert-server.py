@@ -316,8 +316,8 @@ def get_operator_for_email(email):
             .append(email)
     else:
         if domain == "operators.named-data.net":
-            ndn_domain = ndn.Name(user)
-            assigned_namespace = ndn.Name(user)
+            ndn_domain = ndn.Name(str(user))
+            assigned_namespace = ndn.Name(str(user))
         else:
             ndn_domain = ndnify(domain)
             assigned_namespace = \
